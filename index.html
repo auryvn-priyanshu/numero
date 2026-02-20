@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIVYA-DATA | AI Numerology Intelligence</title>
+    <!-- Chart.js for visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blush-pink: #FCE7F3;
+            --soft-lilac: #EDE9FE;
+            --sky-blue: #E0F2FE;
+            --cream-white: #FFFBFA;
+            --text-dark: #2D3748;
+            --accent-purple: #8B5CF6;
+            --accent-pink: #EC4899;
+            --glass: rgba(255, 255, 255, 0.6);
+            --gradient-primary: linear-gradient(135deg, #FCE7F3 0%, #EDE9FE 50%, #E0F2FE 100%);
+            --cta-gradient: linear-gradient(90deg, #EC4899, #8B5CF6);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--cream-white);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Animated Cosmic Background */
+        .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: var(--gradient-primary);
+            overflow: hidden;
+        }
+
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            animation: float 20s infinite alternate;
+        }
+
+        .orb-1 { width: 400px; height: 400px; background: var(--blush-pink); top: -10%; right: -5%; }
+        .orb-2 { width: 350px; height: 350px; background: var(--sky-blue); bottom: 10%; left: -5%; animation-delay: -5s; }
+        .orb-3 { width: 300px; height: 300px; background: var(--soft-lilac); top: 40%; left: 30%; animation-delay: -10s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 100px) scale(1.1); }
+        }
+
+        /* Layout */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .brand {
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--accent-purple);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        p.subtitle {
+            font-size: 1.1rem;
+            color: #64748b;
+        }
+
+        /* Glass Cards */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border-radius: 14px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.8);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 4px var(--soft-lilac);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 14px;
+            background: var(--cta-gradient);
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(236, 72, 153, 0.2);
+            margin-top: 1rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(236, 72, 153, 0.3);
+            filter: brightness(1.05);
+        }
+
+        /* Result Section */
+        #results-container {
+            display: none;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .number-badge {
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.02);
+        }
+
+        .badge-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--cta-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block;
+        }
+
+        .badge-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+            display: block;
+        }
+
+        /* Result Cards */
+        .insight-card {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .insight-card h3 {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .color-dot {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            vertical-align: middle;
+            border: 2px solid white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Loading Animation */
+        .loader-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--gradient-primary);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .sparkle {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--accent-pink);
+            border-top: 4px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .chart-container {
+            margin: 2rem 0;
+            height: 250px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .glass-card { padding: 1.5rem; }
+            .number-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cosmic-bg">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <div class="loader-overlay" id="loader">
+        <div class="sparkle"></div>
+        <p style="margin-top: 1rem; font-weight: 600; color: var(--accent-purple)">Consulting the Stars...</p>
+    </div>
+
+    <div class="container">
+        <header>
+            <span class="brand">DIVYA-DATA</span>
+            <h1>AI Numerology Intelligence</h1>
+            <p class="subtitle">Discover your cosmic blueprint through the ancient science of numbers.</p>
+        </header>
+
+        <main>
+            <!-- Input Form -->
+            <section class="glass-card" id="input-section">
+                <form id="numerology-form">
+                    <div class="form-group">
+                        <label for="fullName">Full Birth Name</label>
+                        <input type="text" id="fullName" placeholder="e.g. Jane Mary Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dob">Date of Birth</label>
+                        <input type="date" id="dob" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Generate My Intelligence Report</button>
+                </form>
+            </section>
+
+            <!-- Results Section -->
+            <section id="results-container">
+                <div class="glass-card">
+                    <div class="number-grid">
+                        <div class="number-badge">
+                            <span class="badge-value" id="res-lp">7</span>
+                            <span class="badge-label">Life Path</span>
+                        </div>
+                        <div class="number-badge">
+                            <span class="badge-value" id="res-dest">3</span>
+                            <span class="badge-label">Destiny</span>
+                        </div>
+                        <div class="number-badge">
+                            <span class="badge-value" id="res-soul">9</span>
+                            <span class="badge-label">Soul Urge</span>
+                        </div>
+                        <div class="number-badge">
+                            <span class="badge-value" id="res-pers">1</span>
+                            <span class="badge-label">Personality</span>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="energyChart"></canvas>
+                    </div>
+
+                    <div class="insight-card" style="background: var(--blush-pink)">
+                        <h3>✨ Emotional Strengths</h3>
+                        <p id="res-strengths"></p>
+                    </div>
+
+                    <div class="insight-card" style="background: var(--soft-lilac)">
+                        <h3>💖 Love & Relationships</h3>
+                        <p id="res-love"></p>
+                    </div>
+
+                    <div class="insight-card" style="background: var(--sky-blue)">
+                        <h3>🚀 Career & Path</h3>
+                        <p id="res-career"></p>
+                    </div>
+
+                    <div class="number-grid" style="margin-top: 2rem;">
+                        <div class="number-badge">
+                            <span class="badge-label">Lucky Color</span>
+                            <div id="res-color-dot" class="color-dot"></div>
+                            <p id="res-color-name" style="font-weight: 700; margin-top: 5px;"></p>
+                        </div>
+                        <div class="number-badge">
+                            <span class="badge-label">Lucky Numbers</span>
+                            <p id="res-lucky-nums" style="font-size: 1.2rem; font-weight: 800; color: var(--accent-purple)"></p>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" onclick="window.location.reload()" style="background: #fff; color: var(--accent-purple); border: 2px solid var(--soft-lilac); box-shadow: none;">Reset Analysis</button>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            &copy; 2024 DIVYA-DATA. All calculations follow the Pythagorean Numerology System.
+        </footer>
+    </div>
+
+    <script>
+        const API_DATA = {
+            interpretations: {
+                1: {
+                    strengths: "Natural born leader, fiercely independent, and highly creative. You possess the drive to start new projects where others hesitate.",
+                    love: "You value independence in relationships. You seek a partner who respects your ambition and isn't afraid of your strength.",
+                    career: "Entrepreneur, CEO, Manager, or any pioneering role where you call the shots.",
+                    color: { name: "Red/Crimson", hex: "#DC2626" }
+                },
+                2: {
+                    strengths: "Empathetic, diplomatic, and a peacemaker. You have an uncanny ability to sense others' emotions and provide harmony.",
+                    love: "Extremely loyal and sensitive. You flourish in partnership and prioritize emotional security above all else.",
+                    career: "Counselor, Mediator, Artist, or Social Worker.",
+                    color: { name: "Soft Orange", hex: "#FB923C" }
+                },
+                3: {
+                    strengths: "The ultimate communicator. You are expressive, joyful, and possess a magnetic social energy that draws people in.",
+                    love: "Playful and spontaneous. You need a partner who can handle your high energy and join in your social adventures.",
+                    career: "Writer, Performer, Marketing Specialist, or Content Creator.",
+                    color: { name: "Sunny Yellow", hex: "#FACC15" }
+                },
+                4: {
+                    strengths: "Practical, disciplined, and reliable. You are the foundation that others rely on, known for your incredible work ethic.",
+                    love: "You show love through stability and acts of service. You prefer long-term, committed structures over casual flings.",
+                    career: "Engineer, Architect, Financial Analyst, or Project Manager.",
+                    color: { name: "Forest Green", hex: "#166534" }
+                },
+                5: {
+                    strengths: "Adaptable, curious, and a lover of freedom. You crave experience and aren't afraid to pivot your life for a new adventure.",
+                    love: "Passionate and exciting. You need a partner who understands your need for space and variety.",
+                    career: "Travel Blogger, Sales, Event Planning, or Independent Consultant.",
+                    color: { name: "Sky Blue", hex: "#38BDF8" }
+                },
+                6: {
+                    strengths: "Nurturing, responsible, and deeply connected to community. You find fulfillment in taking care of those you love.",
+                    love: "The 'Parent' of the zodiac. You are protective and seek to build a beautiful, harmonious home environment.",
+                    career: "Teacher, Doctor, Interior Designer, or Hospitality.",
+                    color: { name: "Indigo", hex: "#4F46E5" }
+                },
+                7: {
+                    strengths: "Analytical, spiritual, and introspective. You seek the hidden truth in everything and value deep wisdom over surface knowledge.",
+                    love: "Reserved but deep. You take time to trust, but once you do, the connection is profound and soul-level.",
+                    career: "Scientist, Researcher, Philosopher, or IT Specialist.",
+                    color: { name: "Royal Purple", hex: "#7E22CE" }
+                },
+                8: {
+                    strengths: "Authoritative and business-minded. You have a natural talent for manifesting material wealth and managing complex systems.",
+                    love: "You treat relationships with the same seriousness as your work. You are a provider and seek a partner with shared goals.",
+                    career: "Finance, Real Estate, Law, or Business Owner.",
+                    color: { name: "Deep Gold", hex: "#B45309" }
+                },
+                9: {
+                    strengths: "Humanitarian and selfless. You have a global perspective and a deep desire to leave the world better than you found it.",
+                    love: "Deeply romantic and idealistic. You seek a partner who shares your values and sense of purpose.",
+                    career: "Non-profit Director, Educator, Artist, or Human Rights Advocate.",
+                    color: { name: "Rose Pink", hex: "#DB2777" }
+                },
+                11: {
+                    strengths: "Master Intuitive. You possess a psychic-like awareness and serve as an inspiration to others through your insights.",
+                    love: "Intense and soulful. You need a partner who can navigate the high emotional frequencies you operate on.",
+                    career: "Psychologist, Visionary Leader, or Spiritual Guide.",
+                    color: { name: "Silver/Pearl", hex: "#E2E8F0" }
+                },
+                22: {
+                    strengths: "Master Architect. You have the ability to turn large-scale dreams into tangible reality through sheer discipline.",
+                    love: "You seek a 'Power Couple' dynamic where you can build an empire alongside your partner.",
+                    career: "International Business, Large-scale Construction, or Global Innovation.",
+                    color: { name: "Copper", hex: "#9A3412" }
+                }
+            }
+        };
+
+        const charMap = {
+            a:1, j:1, s:1,
+            b:2, k:2, t:2,
+            c:3, l:3, u:3,
+            d:4, m:4, v:4,
+            e:5, n:5, w:5,
+            f:6, o:6, x:6,
+            g:7, p:7, y:7,
+            h:8, q:8, z:8,
+            i:9, r:9
+        };
+
+        const vowels = ['a', 'e', 'i', 'o', 'u'];
+
+        function reduceNum(n, allowMaster = true) {
+            if (allowMaster && (n === 11 || n === 22)) return n;
+            while (n > 9) {
+                n = n.toString().split('').reduce((acc, d) => acc + parseInt(d), 0);
+                if (allowMaster && (n === 11 || n === 22)) break;
+            }
+            return n;
+        }
+
+        function calculateLifePath(dob) {
+            const parts = dob.split('-'); // YYYY, MM, DD
+            const sum = parts.reduce((acc, part) => {
+                return acc + reduceNum(parseInt(part), false);
+            }, 0);
+            return reduceNum(sum);
+        }
+
+        function calculateDestiny(name) {
+            const cleanName = name.toLowerCase().replace(/[^a-z]/g, '');
+            let sum = 0;
+            for(let char of cleanName) sum += charMap[char] || 0;
+            return reduceNum(sum);
+        }
+
+        function calculateSoulUrge(name) {
+            const cleanName = name.toLowerCase().replace(/[^a-z]/g, '');
+            let sum = 0;
+            for(let char of cleanName) {
+                if(vowels.includes(char)) sum += charMap[char];
+            }
+            return reduceNum(sum);
+        }
+
+        function calculatePersonality(name) {
+            const cleanName = name.toLowerCase().replace(/[^a-z]/g, '');
+            let sum = 0;
+            for(let char of cleanName) {
+                if(!vowels.includes(char)) sum += charMap[char];
+            }
+            return reduceNum(sum);
+        }
+
+        let chartInstance = null;
+
+        function renderChart(data) {
+            const ctx = document.getElementById('energyChart').getContext('2d');
+            if(chartInstance) chartInstance.destroy();
+            
+            chartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Leadership', 'Social', 'Practical', 'Intuition', 'Ambition'],
+                    datasets: [{
+                        label: 'Vibrational Profile',
+                        data: data,
+                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                        borderColor: '#8B5CF6',
+                        pointBackgroundColor: '#EC4899',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 10,
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        document.getElementById('numerology-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('fullName').value;
+            const dob = document.getElementById('dob').value;
+            
+            // Show loader
+            document.getElementById('loader').style.display = 'flex';
+            
+            setTimeout(() => {
+                const lp = calculateLifePath(dob);
+                const dest = calculateDestiny(name);
+                const soul = calculateSoulUrge(name);
+                const pers = calculatePersonality(name);
+                
+                // Display Numbers
+                document.getElementById('res-lp').innerText = lp;
+                document.getElementById('res-dest').innerText = dest;
+                document.getElementById('res-soul').innerText = soul;
+                document.getElementById('res-pers').innerText = pers;
+
+                // Interpretations
+                const mainInfo = API_DATA.interpretations[lp] || API_DATA.interpretations[1];
+                document.getElementById('res-strengths').innerText = mainInfo.strengths;
+                document.getElementById('res-love').innerText = mainInfo.love;
+                document.getElementById('res-career').innerText = mainInfo.career;
+                
+                // Lucky Color
+                document.getElementById('res-color-dot').style.backgroundColor = mainInfo.color.hex;
+                document.getElementById('res-color-name').innerText = mainInfo.color.name;
+                
+                // Lucky Numbers
+                document.getElementById('res-lucky-nums').innerText = `${lp}, ${dest}, ${lp + dest}`;
+
+                // Radar Chart Logic (Pseudorandom based on result digits for uniqueness)
+                const chartData = [
+                    (lp * 1.1) % 10 + 2,
+                    (dest * 1.3) % 10 + 1,
+                    (soul * 0.9) % 10 + 3,
+                    (pers * 1.2) % 10 + 2,
+                    ((lp + dest) / 2) % 10 + 4
+                ];
+                renderChart(chartData);
+
+                // UI Transitions
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('input-section').style.display = 'none';
+                document.getElementById('results-container').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
