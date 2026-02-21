@@ -3,593 +3,557 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DIVYA-DATA | AI Numerology Intelligence</title>
-    <!-- Chart.js for visualization -->
+    <title>DIVYA-DATA | Vedic AI Numerology Intelligence</title>
+    <!-- Three.js for 3D Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
+            --gold: #D4AF37;
+            --deep-purple: #2D1B4E;
             --blush-pink: #FCE7F3;
             --soft-lilac: #EDE9FE;
-            --sky-blue: #E0F2FE;
-            --cream-white: #FFFBFA;
-            --text-dark: #2D3748;
-            --accent-purple: #8B5CF6;
-            --accent-pink: #EC4899;
-            --glass: rgba(255, 255, 255, 0.6);
-            --gradient-primary: linear-gradient(135deg, #FCE7F3 0%, #EDE9FE 50%, #E0F2FE 100%);
-            --cta-gradient: linear-gradient(90deg, #EC4899, #8B5CF6);
+            --cream: #FFFBFA;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --accent-gradient: linear-gradient(135deg, #EC4899, #8B5CF6, #6366F1);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--cream-white);
-            color: var(--text-dark);
-            min-height: 100vh;
+            background-color: var(--cream);
+            color: var(--deep-purple);
             overflow-x: hidden;
-            line-height: 1.6;
+            min-height: 100vh;
         }
 
-        /* Animated Cosmic Background */
-        .cosmic-bg {
+        #canvas-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: var(--gradient-primary);
-            overflow: hidden;
+            background: linear-gradient(to bottom, #fdf2f8, #f5f3ff, #ecfeff);
         }
 
-        .glow-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.5;
-            animation: float 20s infinite alternate;
-        }
-
-        .orb-1 { width: 400px; height: 400px; background: var(--blush-pink); top: -10%; right: -5%; }
-        .orb-2 { width: 350px; height: 350px; background: var(--sky-blue); bottom: 10%; left: -5%; animation-delay: -5s; }
-        .orb-3 { width: 300px; height: 300px; background: var(--soft-lilac); top: 40%; left: 30%; animation-delay: -10s; }
-
-        @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(50px, 100px) scale(1.1); }
-        }
-
-        /* Layout */
-        .container {
-            max-width: 800px;
+        .app-shell {
+            max-width: 900px;
             margin: 0 auto;
             padding: 2rem 1rem;
+            position: relative;
+            z-index: 1;
         }
 
         header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 4rem;
         }
 
-        .brand {
-            font-weight: 800;
-            letter-spacing: 2px;
-            color: var(--accent-purple);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
+        .brand-logo {
+            font-family: 'Cinzel', serif;
+            letter-spacing: 4px;
+            font-weight: 900;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
             display: block;
         }
 
         h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            color: var(--text-dark);
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--deep-purple);
+            line-height: 1.1;
             margin-bottom: 1rem;
         }
 
-        p.subtitle {
-            font-size: 1.1rem;
-            color: #64748b;
-        }
-
-        /* Glass Cards */
-        .glass-card {
-            background: var(--glass);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 24px;
-            padding: 2.5rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+        .sanskrit-sub {
+            font-style: italic;
+            opacity: 0.7;
+            font-size: 1rem;
             margin-bottom: 2rem;
-            transition: transform 0.3s ease;
         }
 
-        /* Form Styling */
-        .form-group {
-            margin-bottom: 1.5rem;
+        /* Form styling */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 32px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.05);
+        }
+
+        .input-group {
+            margin-bottom: 2rem;
         }
 
         label {
             display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #4a5568;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 0.8rem;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         input {
             width: 100%;
-            padding: 1rem 1.25rem;
-            border-radius: 14px;
-            border: 1px solid rgba(0, 0, 0, 0.05);
             background: rgba(255, 255, 255, 0.8);
-            font-family: inherit;
-            font-size: 1rem;
+            border: 2px solid transparent;
+            padding: 1.25rem;
+            border-radius: 16px;
+            font-size: 1.1rem;
             transition: all 0.3s ease;
             outline: none;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
         }
 
         input:focus {
-            border-color: var(--accent-purple);
-            box-shadow: 0 0 0 4px var(--soft-lilac);
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 1.2rem;
-            border: none;
-            border-radius: 14px;
-            background: var(--cta-gradient);
-            color: white;
-            font-weight: 700;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(236, 72, 153, 0.2);
-            margin-top: 1rem;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(236, 72, 153, 0.3);
-            filter: brightness(1.05);
-        }
-
-        /* Result Section */
-        #results-container {
-            display: none;
-            animation: fadeInUp 0.8s ease-out forwards;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .number-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .number-badge {
-            text-align: center;
-            padding: 1.5rem;
+            border-color: #8B5CF6;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 0 0 5px rgba(139, 92, 246, 0.1);
         }
 
-        .badge-value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: var(--cta-gradient);
+        .btn-divya {
+            width: 100%;
+            padding: 1.5rem;
+            border: none;
+            border-radius: 18px;
+            background: var(--accent-gradient);
+            color: white;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-divya:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 35px rgba(139, 92, 246, 0.4);
+            filter: brightness(1.1);
+        }
+
+        /* Results Display */
+        #results {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .grid-numbers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .num-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 24px;
+            text-align: center;
+            border-bottom: 4px solid var(--soft-lilac);
+        }
+
+        .num-card .val {
+            font-size: 3.5rem;
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            display: block;
         }
 
-        .badge-label {
-            font-size: 0.75rem;
+        .num-card .label {
+            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
+            font-weight: 800;
+            letter-spacing: 2px;
             color: #94a3b8;
-            margin-top: 0.5rem;
+        }
+
+        .num-card .sanskrit {
+            font-size: 0.9rem;
+            color: var(--gold);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
             display: block;
         }
 
-        /* Result Cards */
-        .insight-card {
+        .detail-section {
+            background: white;
+            border-radius: 24px;
+            padding: 2.5rem;
             margin-bottom: 1.5rem;
-            padding: 1.5rem;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.4);
         }
 
-        .insight-card h3 {
-            font-family: 'Playfair Display', serif;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .detail-section h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--deep-purple);
+            border-left: 5px solid var(--gold);
+            padding-left: 1rem;
         }
 
-        .color-dot {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            vertical-align: middle;
-            border: 2px solid white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        .chart-box {
+            height: 400px;
+            margin: 2rem 0;
         }
 
-        /* Loading Animation */
-        .loader-overlay {
+        /* Loader */
+        .vedic-loader {
             display: none;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--gradient-primary);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            inset: 0;
+            background: var(--cream);
+            z-index: 9999;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        .sparkle {
-            width: 50px;
-            height: 50px;
-            border: 4px solid var(--accent-pink);
-            border-top: 4px solid transparent;
+        .mandala {
+            width: 100px;
+            height: 100px;
+            border: 8px double var(--gold);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: rotateMandala 4s linear infinite;
         }
 
-        @keyframes spin {
+        @keyframes rotateMandala {
+            from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
 
-        .chart-container {
-            margin: 2rem 0;
-            height: 250px;
-        }
-
-        footer {
-            text-align: center;
-            padding: 2rem;
-            font-size: 0.8rem;
-            color: #94a3b8;
-        }
-
-        /* Mobile Adjustments */
         @media (max-width: 600px) {
-            h1 { font-size: 1.8rem; }
-            .glass-card { padding: 1.5rem; }
-            .number-grid { grid-template-columns: 1fr 1fr; }
+            h1 { font-size: 2rem; }
+            .card { padding: 1.5rem; }
+            .grid-numbers { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <div class="cosmic-bg">
-        <div class="glow-orb orb-1"></div>
-        <div class="glow-orb orb-2"></div>
-        <div class="glow-orb orb-3"></div>
+    <div id="canvas-container"></div>
+
+    <div class="vedic-loader" id="loader">
+        <div class="mandala"></div>
+        <p style="margin-top: 2rem; font-family: 'Cinzel', serif; color: var(--gold); font-weight: 700; letter-spacing: 3px;">ALIGNING KARMIC DATA</p>
     </div>
 
-    <div class="loader-overlay" id="loader">
-        <div class="sparkle"></div>
-        <p style="margin-top: 1rem; font-weight: 600; color: var(--accent-purple)">Consulting the Stars...</p>
-    </div>
-
-    <div class="container">
+    <div class="app-shell">
         <header>
-            <span class="brand">DIVYA-DATA</span>
-            <h1>AI Numerology Intelligence</h1>
-            <p class="subtitle">Discover your cosmic blueprint through the ancient science of numbers.</p>
+            <span class="brand-logo">DIVYA-DATA</span>
+            <h1>Intelligence of the Atman</h1>
+            <p class="sanskrit-sub">"Yathā piṇḍe tathā brahmāṇḍe" — As is the atom, so is the universe.</p>
         </header>
 
         <main>
-            <!-- Input Form -->
-            <section class="glass-card" id="input-section">
-                <form id="numerology-form">
-                    <div class="form-group">
-                        <label for="fullName">Full Birth Name</label>
-                        <input type="text" id="fullName" placeholder="e.g. Jane Mary Doe" required>
+            <section class="card" id="input-card">
+                <form id="vedic-form">
+                    <div class="input-group">
+                        <label>Varna (Full Name)</label>
+                        <input type="text" id="nameInput" placeholder="Enter Full Legal Birth Name" required>
                     </div>
-                    <div class="form-group">
-                        <label for="dob">Date of Birth</label>
-                        <input type="date" id="dob" required>
+                    <div class="input-group">
+                        <label>Janma Tithi (Date of Birth)</label>
+                        <input type="date" id="dobInput" required>
                     </div>
-                    <button type="submit" class="btn-primary">Generate My Intelligence Report</button>
+                    <button type="submit" class="btn-divya">CALCULATE DESTINY</button>
                 </form>
             </section>
 
-            <!-- Results Section -->
-            <section id="results-container">
-                <div class="glass-card">
-                    <div class="number-grid">
-                        <div class="number-badge">
-                            <span class="badge-value" id="res-lp">7</span>
-                            <span class="badge-label">Life Path</span>
-                        </div>
-                        <div class="number-badge">
-                            <span class="badge-value" id="res-dest">3</span>
-                            <span class="badge-label">Destiny</span>
-                        </div>
-                        <div class="number-badge">
-                            <span class="badge-value" id="res-soul">9</span>
-                            <span class="badge-label">Soul Urge</span>
-                        </div>
-                        <div class="number-badge">
-                            <span class="badge-value" id="res-pers">1</span>
-                            <span class="badge-label">Personality</span>
-                        </div>
+            <section id="results">
+                <div class="grid-numbers">
+                    <div class="num-card">
+                        <span class="sanskrit">Mukhya Patha</span>
+                        <div class="val" id="lp-val">0</div>
+                        <span class="label">Life Path</span>
                     </div>
-
-                    <div class="chart-container">
-                        <canvas id="energyChart"></canvas>
+                    <div class="num-card">
+                        <span class="sanskrit">Karma Bhava</span>
+                        <div class="val" id="dest-val">0</div>
+                        <span class="label">Destiny</span>
                     </div>
-
-                    <div class="insight-card" style="background: var(--blush-pink)">
-                        <h3>✨ Emotional Strengths</h3>
-                        <p id="res-strengths"></p>
+                    <div class="num-card">
+                        <span class="sanskrit">Atma Iccha</span>
+                        <div class="val" id="soul-val">0</div>
+                        <span class="label">Soul Urge</span>
                     </div>
-
-                    <div class="insight-card" style="background: var(--soft-lilac)">
-                        <h3>💖 Love & Relationships</h3>
-                        <p id="res-love"></p>
+                    <div class="num-card">
+                        <span class="sanskrit">Svarūpa</span>
+                        <div class="val" id="pers-val">0</div>
+                        <span class="label">Personality</span>
                     </div>
-
-                    <div class="insight-card" style="background: var(--sky-blue)">
-                        <h3>🚀 Career & Path</h3>
-                        <p id="res-career"></p>
-                    </div>
-
-                    <div class="number-grid" style="margin-top: 2rem;">
-                        <div class="number-badge">
-                            <span class="badge-label">Lucky Color</span>
-                            <div id="res-color-dot" class="color-dot"></div>
-                            <p id="res-color-name" style="font-weight: 700; margin-top: 5px;"></p>
-                        </div>
-                        <div class="number-badge">
-                            <span class="badge-label">Lucky Numbers</span>
-                            <p id="res-lucky-nums" style="font-size: 1.2rem; font-weight: 800; color: var(--accent-purple)"></p>
-                        </div>
-                    </div>
-
-                    <button class="btn-primary" onclick="window.location.reload()" style="background: #fff; color: var(--accent-purple); border: 2px solid var(--soft-lilac); box-shadow: none;">Reset Analysis</button>
                 </div>
+
+                <div class="card" style="margin-bottom: 2rem;">
+                    <div class="chart-box">
+                        <canvas id="vedicChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Deep Spiritual Insight</h3>
+                    <p id="insight-main" style="font-size: 1.1rem; line-height: 1.8;"></p>
+                </div>
+
+                <div class="detail-section" style="background: var(--soft-lilac)">
+                    <h3>Karmic Challenges</h3>
+                    <p id="insight-challenge"></p>
+                </div>
+
+                <div class="grid-numbers">
+                    <div class="num-card" style="border-bottom-color: #4ade80">
+                        <span class="label">Lucky Ratna</span>
+                        <p id="lucky-stone" style="font-weight: 700; margin-top: 10px;"></p>
+                    </div>
+                    <div class="num-card" style="border-bottom-color: #fb923c">
+                        <span class="label">Power Mantra</span>
+                        <p id="power-mantra" style="font-family: 'Cinzel', serif; font-size: 0.9rem; font-weight: 700; margin-top: 10px; color: var(--gold);"></p>
+                    </div>
+                </div>
+
+                <button class="btn-divya" onclick="location.reload()" style="background: white; color: var(--deep-purple); border: 2px solid var(--soft-lilac);">NEW CONSULTATION</button>
             </section>
         </main>
 
-        <footer>
-            &copy; 2024 DIVYA-DATA. All calculations follow the Pythagorean Numerology System.
+        <footer style="text-align: center; padding: 4rem 0; opacity: 0.6; font-size: 0.8rem;">
+            &copy; 2024 DIVYA-DATA ARTIFICIAL INTELLIGENCE. ALL RIGHTS RESERVED.
         </footer>
     </div>
 
     <script>
-        const API_DATA = {
-            interpretations: {
-                1: {
-                    strengths: "Natural born leader, fiercely independent, and highly creative. You possess the drive to start new projects where others hesitate.",
-                    love: "You value independence in relationships. You seek a partner who respects your ambition and isn't afraid of your strength.",
-                    career: "Entrepreneur, CEO, Manager, or any pioneering role where you call the shots.",
-                    color: { name: "Red/Crimson", hex: "#DC2626" }
-                },
-                2: {
-                    strengths: "Empathetic, diplomatic, and a peacemaker. You have an uncanny ability to sense others' emotions and provide harmony.",
-                    love: "Extremely loyal and sensitive. You flourish in partnership and prioritize emotional security above all else.",
-                    career: "Counselor, Mediator, Artist, or Social Worker.",
-                    color: { name: "Soft Orange", hex: "#FB923C" }
-                },
-                3: {
-                    strengths: "The ultimate communicator. You are expressive, joyful, and possess a magnetic social energy that draws people in.",
-                    love: "Playful and spontaneous. You need a partner who can handle your high energy and join in your social adventures.",
-                    career: "Writer, Performer, Marketing Specialist, or Content Creator.",
-                    color: { name: "Sunny Yellow", hex: "#FACC15" }
-                },
-                4: {
-                    strengths: "Practical, disciplined, and reliable. You are the foundation that others rely on, known for your incredible work ethic.",
-                    love: "You show love through stability and acts of service. You prefer long-term, committed structures over casual flings.",
-                    career: "Engineer, Architect, Financial Analyst, or Project Manager.",
-                    color: { name: "Forest Green", hex: "#166534" }
-                },
-                5: {
-                    strengths: "Adaptable, curious, and a lover of freedom. You crave experience and aren't afraid to pivot your life for a new adventure.",
-                    love: "Passionate and exciting. You need a partner who understands your need for space and variety.",
-                    career: "Travel Blogger, Sales, Event Planning, or Independent Consultant.",
-                    color: { name: "Sky Blue", hex: "#38BDF8" }
-                },
-                6: {
-                    strengths: "Nurturing, responsible, and deeply connected to community. You find fulfillment in taking care of those you love.",
-                    love: "The 'Parent' of the zodiac. You are protective and seek to build a beautiful, harmonious home environment.",
-                    career: "Teacher, Doctor, Interior Designer, or Hospitality.",
-                    color: { name: "Indigo", hex: "#4F46E5" }
-                },
-                7: {
-                    strengths: "Analytical, spiritual, and introspective. You seek the hidden truth in everything and value deep wisdom over surface knowledge.",
-                    love: "Reserved but deep. You take time to trust, but once you do, the connection is profound and soul-level.",
-                    career: "Scientist, Researcher, Philosopher, or IT Specialist.",
-                    color: { name: "Royal Purple", hex: "#7E22CE" }
-                },
-                8: {
-                    strengths: "Authoritative and business-minded. You have a natural talent for manifesting material wealth and managing complex systems.",
-                    love: "You treat relationships with the same seriousness as your work. You are a provider and seek a partner with shared goals.",
-                    career: "Finance, Real Estate, Law, or Business Owner.",
-                    color: { name: "Deep Gold", hex: "#B45309" }
-                },
-                9: {
-                    strengths: "Humanitarian and selfless. You have a global perspective and a deep desire to leave the world better than you found it.",
-                    love: "Deeply romantic and idealistic. You seek a partner who shares your values and sense of purpose.",
-                    career: "Non-profit Director, Educator, Artist, or Human Rights Advocate.",
-                    color: { name: "Rose Pink", hex: "#DB2777" }
-                },
-                11: {
-                    strengths: "Master Intuitive. You possess a psychic-like awareness and serve as an inspiration to others through your insights.",
-                    love: "Intense and soulful. You need a partner who can navigate the high emotional frequencies you operate on.",
-                    career: "Psychologist, Visionary Leader, or Spiritual Guide.",
-                    color: { name: "Silver/Pearl", hex: "#E2E8F0" }
-                },
-                22: {
-                    strengths: "Master Architect. You have the ability to turn large-scale dreams into tangible reality through sheer discipline.",
-                    love: "You seek a 'Power Couple' dynamic where you can build an empire alongside your partner.",
-                    career: "International Business, Large-scale Construction, or Global Innovation.",
-                    color: { name: "Copper", hex: "#9A3412" }
-                }
+        // --- 3D BACKGROUND (Three.js) ---
+        let scene, camera, renderer, stars;
+
+        function init3D() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            const starGeometry = new THREE.BufferGeometry();
+            const starCount = 1500;
+            const posArray = new Float32Array(starCount * 3);
+
+            for(let i = 0; i < starCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 10;
+            }
+            starGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+            const starMaterial = new THREE.PointsMaterial({
+                size: 0.005,
+                color: 0x8B5CF6,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            stars = new THREE.Points(starGeometry, starMaterial);
+            scene.add(stars);
+            camera.position.z = 2;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            stars.rotation.y += 0.0005;
+            stars.rotation.x += 0.0002;
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // --- NUMEROLOGY ENGINE ---
+        const MASTER_DATA = {
+            1: {
+                insight: "The Sun (Surya) Energy. You are a manifestor of pure will. Your path requires you to overcome the fear of being alone to lead others toward a new dawn.",
+                challenge: "The shadow of pride. You must learn that true leadership is service, not dominance.",
+                mantra: "Om Ghrinih Suryaya Namah",
+                stone: "Ruby (Manik)"
+            },
+            2: {
+                insight: "The Moon (Chandra) Energy. You are a soul of reflection and deep empathy. Your strength lies in the 'hidden' support you provide to the world's harmony.",
+                challenge: "Emotional over-dependence. You must find your own center within the shifting tides of others' moods.",
+                mantra: "Om Som Somaya Namah",
+                stone: "Pearl (Moti)"
+            },
+            3: {
+                insight: "Jupiter (Guru) Energy. The teacher and the expander. Your voice is a vessel for wisdom, and your joy is contagious. You are meant to create through expression.",
+                challenge: "Scattered focus. Avoid thinning your energy across too many pursuits; depth is where your treasure lies.",
+                mantra: "Om Brim Brihaspataye Namah",
+                stone: "Yellow Sapphire (Pukhraj)"
+            },
+            4: {
+                insight: "Rahu Energy. You are the architect of the material plane. You see the structure in chaos and build foundations that last for generations.",
+                challenge: "Rigidity. Life will test you by forcing change when you least want it. Flexibility is your spiritual lesson.",
+                mantra: "Om Raam Rahve Namah",
+                stone: "Hessonite (Gomed)"
+            },
+            5: {
+                insight: "Mercury (Budha) Energy. The messenger and the alchemist. Your life is a series of rapid transformations and brilliant adaptations.",
+                challenge: "Restlessness. You may flee from depth in search of variety. Realize that the universe is found in a single point.",
+                mantra: "Om Bum Budhaya Namah",
+                stone: "Emerald (Panna)"
+            },
+            6: {
+                insight: "Venus (Shukra) Energy. The nurturer and the artist. Your karma is tied to the beauty of the home and the healing of the broken-hearted.",
+                challenge: "The Savior Complex. You cannot fix everyone. Your first responsibility is the sanctity of your own soul.",
+                mantra: "Om Shum Shukraya Namah",
+                stone: "Diamond / White Zircon"
+            },
+            7: {
+                insight: "Ketu Energy. The mystic and the hermit. You are here to bridge the gap between the material and the void. You possess ancient, 'downloaded' knowledge.",
+                challenge: "Isolation. The world may feel alien to you. Use your wisdom to build bridges, not walls.",
+                mantra: "Om Kem Ketve Namah",
+                stone: "Cat's Eye (Lehsunia)"
+            },
+            8: {
+                insight: "Saturn (Shani) Energy. The Master of Karma. You are born to handle power, wealth, and heavy responsibility. Your rewards are delayed but eternal.",
+                challenge: "Hardship as a teacher. Do not mistake discipline for punishment; you are being forged into steel.",
+                mantra: "Om Sham Shanaye Namah",
+                stone: "Blue Sapphire (Neelam)"
+            },
+            9: {
+                insight: "Mars (Mangal) Energy. The spiritual warrior. You are at the end of a cycle, here to resolve ancestral karma and practice universal love.",
+                challenge: "Uncontrolled Fire. Anger is just misdirected passion. Channel your fire into protecting the weak.",
+                mantra: "Om Ang Angarkaya Namah",
+                stone: "Red Coral (Moonga)"
+            },
+            11: {
+                insight: "Master Vibration. The Messenger of Light. You operate on a frequency higher than the physical, often feeling 'on edge' with psychic awareness.",
+                challenge: "Nervous exhaustion. You must ground yourself in the earth to handle the electricity of your soul.",
+                mantra: "Om Namo Narayanaya",
+                stone: "Amethyst"
+            },
+            22: {
+                insight: "Master Builder. You have the vision of the 11 combined with the practicality of the 4. You can build systems that change global consciousness.",
+                challenge: "The weight of the world. Do not let the magnitude of your goals paralyze your daily actions.",
+                mantra: "Om Shri Mahaganeshaya Namah",
+                stone: "Citrine"
             }
         };
 
-        const charMap = {
-            a:1, j:1, s:1,
-            b:2, k:2, t:2,
-            c:3, l:3, u:3,
-            d:4, m:4, v:4,
-            e:5, n:5, w:5,
-            f:6, o:6, x:6,
-            g:7, p:7, y:7,
-            h:8, q:8, z:8,
-            i:9, r:9
-        };
+        const charValues = { a:1, j:1, s:1, b:2, k:2, t:2, c:3, l:3, u:3, d:4, m:4, v:4, e:5, n:5, w:5, f:6, o:6, x:6, g:7, p:7, y:7, h:8, q:8, z:8, i:9, r:9 };
+        const vowels = ['a','e','i','o','u'];
 
-        const vowels = ['a', 'e', 'i', 'o', 'u'];
-
-        function reduceNum(n, allowMaster = true) {
-            if (allowMaster && (n === 11 || n === 22)) return n;
-            while (n > 9) {
-                n = n.toString().split('').reduce((acc, d) => acc + parseInt(d), 0);
-                if (allowMaster && (n === 11 || n === 22)) break;
+        function reduce(num, isMasterAllowed = true) {
+            if (isMasterAllowed && (num === 11 || num === 22 || num === 33)) return num;
+            while (num > 9) {
+                num = num.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+                if (isMasterAllowed && (num === 11 || num === 22 || num === 33)) break;
             }
-            return n;
+            return num;
         }
 
-        function calculateLifePath(dob) {
-            const parts = dob.split('-'); // YYYY, MM, DD
-            const sum = parts.reduce((acc, part) => {
-                return acc + reduceNum(parseInt(part), false);
-            }, 0);
-            return reduceNum(sum);
+        function getLifePath(dob) {
+            const [y, m, d] = dob.split('-');
+            return reduce(reduce(parseInt(y)) + reduce(parseInt(m)) + reduce(parseInt(d)));
         }
 
-        function calculateDestiny(name) {
-            const cleanName = name.toLowerCase().replace(/[^a-z]/g, '');
-            let sum = 0;
-            for(let char of cleanName) sum += charMap[char] || 0;
-            return reduceNum(sum);
-        }
-
-        function calculateSoulUrge(name) {
-            const cleanName = name.toLowerCase().replace(/[^a-z]/g, '');
-            let sum = 0;
-            for(let char of cleanName) {
-                if(vowels.includes(char)) sum += charMap[char];
+        function getNameAnalysis(name) {
+            const clean = name.toLowerCase().replace(/[^a-z]/g, '');
+            let dest = 0, soul = 0, pers = 0;
+            for(let char of clean) {
+                const val = charValues[char] || 0;
+                dest += val;
+                if(vowels.includes(char)) soul += val;
+                else pers += val;
             }
-            return reduceNum(sum);
+            return {
+                destiny: reduce(dest),
+                soul: reduce(soul),
+                personality: reduce(pers)
+            };
         }
 
-        function calculatePersonality(name) {
-            const cleanName = name.toLowerCase().replace(/[^a-z]/g, '');
-            let sum = 0;
-            for(let char of cleanName) {
-                if(!vowels.includes(char)) sum += charMap[char];
-            }
-            return reduceNum(sum);
-        }
-
-        let chartInstance = null;
-
-        function renderChart(data) {
-            const ctx = document.getElementById('energyChart').getContext('2d');
-            if(chartInstance) chartInstance.destroy();
-            
-            chartInstance = new Chart(ctx, {
-                type: 'radar',
+        let chart = null;
+        function updateChart(vals) {
+            const ctx = document.getElementById('vedicChart').getContext('2d');
+            if(chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'line',
                 data: {
-                    labels: ['Leadership', 'Social', 'Practical', 'Intuition', 'Ambition'],
+                    labels: ['Root', 'Sacral', 'Solar', 'Heart', 'Throat', 'Third Eye', 'Crown'],
                     datasets: [{
-                        label: 'Vibrational Profile',
-                        data: data,
-                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
-                        borderColor: '#8B5CF6',
-                        pointBackgroundColor: '#EC4899',
-                        borderWidth: 2
+                        label: 'Vibrational Frequency',
+                        data: vals,
+                        borderColor: '#D4AF37',
+                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#8B5CF6'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            beginAtZero: true,
-                            max: 10,
-                            ticks: { display: false }
-                        }
-                    },
-                    plugins: { legend: { display: false } }
+                    scales: { y: { beginAtZero: true, max: 12, display: false } }
                 }
             });
         }
 
-        document.getElementById('numerology-form').addEventListener('submit', function(e) {
+        document.getElementById('vedic-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            const name = document.getElementById('fullName').value;
-            const dob = document.getElementById('dob').value;
-            
-            // Show loader
+            const name = document.getElementById('nameInput').value;
+            const dob = document.getElementById('dobInput').value;
+
             document.getElementById('loader').style.display = 'flex';
-            
+
             setTimeout(() => {
-                const lp = calculateLifePath(dob);
-                const dest = calculateDestiny(name);
-                const soul = calculateSoulUrge(name);
-                const pers = calculatePersonality(name);
-                
-                // Display Numbers
-                document.getElementById('res-lp').innerText = lp;
-                document.getElementById('res-dest').innerText = dest;
-                document.getElementById('res-soul').innerText = soul;
-                document.getElementById('res-pers').innerText = pers;
+                const lp = getLifePath(dob);
+                const ana = getNameAnalysis(name);
 
-                // Interpretations
-                const mainInfo = API_DATA.interpretations[lp] || API_DATA.interpretations[1];
-                document.getElementById('res-strengths').innerText = mainInfo.strengths;
-                document.getElementById('res-love').innerText = mainInfo.love;
-                document.getElementById('res-career').innerText = mainInfo.career;
-                
-                // Lucky Color
-                document.getElementById('res-color-dot').style.backgroundColor = mainInfo.color.hex;
-                document.getElementById('res-color-name').innerText = mainInfo.color.name;
-                
-                // Lucky Numbers
-                document.getElementById('res-lucky-nums').innerText = `${lp}, ${dest}, ${lp + dest}`;
+                document.getElementById('lp-val').innerText = lp;
+                document.getElementById('dest-val').innerText = ana.destiny;
+                document.getElementById('soul-val').innerText = ana.soul;
+                document.getElementById('pers-val').innerText = ana.personality;
 
-                // Radar Chart Logic (Pseudorandom based on result digits for uniqueness)
-                const chartData = [
-                    (lp * 1.1) % 10 + 2,
-                    (dest * 1.3) % 10 + 1,
-                    (soul * 0.9) % 10 + 3,
-                    (pers * 1.2) % 10 + 2,
-                    ((lp + dest) / 2) % 10 + 4
+                const info = MASTER_DATA[lp] || MASTER_DATA[1];
+                document.getElementById('insight-main').innerText = info.insight;
+                document.getElementById('insight-challenge').innerText = info.challenge;
+                document.getElementById('lucky-stone').innerText = info.stone;
+                document.getElementById('power-mantra').innerText = info.mantra;
+
+                // Generate pseudo-data for chart based on numbers
+                const chartPoints = [
+                    (lp + 2) % 10, (ana.destiny + 1) % 10, (ana.soul + 4) % 10, 
+                    (lp + ana.soul) % 10 + 2, (ana.personality) % 10 + 3, 
+                    (lp * 1.5) % 11 + 1, (ana.destiny * 1.2) % 11 + 1
                 ];
-                renderChart(chartData);
+                updateChart(chartPoints);
 
-                // UI Transitions
                 document.getElementById('loader').style.display = 'none';
-                document.getElementById('input-section').style.display = 'none';
-                document.getElementById('results-container').style.display = 'block';
+                document.getElementById('input-card').style.display = 'none';
+                document.getElementById('results').style.display = 'block';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, 2000);
+            }, 2500);
         });
+
+        // Initialize
+        window.onload = () => {
+            init3D();
+            animate();
+        };
     </script>
 </body>
 </html>
